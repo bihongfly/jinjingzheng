@@ -27,7 +27,7 @@ class AutoRenewTrafficPermit(object):
         res_result_json = response.json()
         return res_result_json
 
-    def getRemainingTime(self):
+    def get_remaining_time(self):
         payload = {}
         state_result_json = self.request(self.state_url, payload)
         status_code = state_result_json["code"]
@@ -41,8 +41,8 @@ class AutoRenewTrafficPermit(object):
         remaining_time = state_result_json["data"]["bzclxx"][0]["bzxx"][0]["sxsyts"]
         return current_state,remaining_time
 
-    def autoRenew(self):
-        current_state,remaining_time = self.getRemainingTime()
+    def auto_renew(self):
+        current_state,remaining_time = self.get_remaining_time()
         self.log_info(f"进京证当前状态：{current_state}")
         self.log_info(f"剩余天数：{remaining_time}")
         if current_state == "审核通过(生效中)":
@@ -86,7 +86,4 @@ class AutoRenewTrafficPermit(object):
             self.log_info(f"申请状态：{current_state}")
             self.log_info(f"生效时间：{validity_period}")
 
-AutoRenewTrafficPermit().autoRenew()
-
-
-
+AutoRenewTrafficPermit().auto_renew()
