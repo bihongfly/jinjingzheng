@@ -39,10 +39,11 @@ class AutoRenewTrafficPermit(object):
             sys.exit()
         current_state = state_result_json["data"]["bzclxx"][0]["bzxx"][0]["blztmc"]
         remaining_time = state_result_json["data"]["bzclxx"][0]["bzxx"][0]["sxsyts"]
-        return current_state,remaining_time
+        apply_id_old = state_result_json["data"]["bzclxx"][0]["bzxx"][0]["applyId"]
+        return current_state,remaining_time,apply_id_old
 
     def auto_renew(self):
-        current_state,remaining_time = self.get_remaining_time()
+        current_state,remaining_time,apply_id_old = self.getRemainingTime()
         self.log_info(f"进京证当前状态：{current_state}")
         self.log_info(f"剩余天数：{remaining_time}")
         if current_state == "审核通过(生效中)":
@@ -57,7 +58,7 @@ class AutoRenewTrafficPermit(object):
                 "txrxx" : [
                 ],
                 "hpzl" : "",
-                "applyIdOld" : "",
+                "applyIdOld" : apply_id_old,
                 "sqdzgdwd" : "",
                 "jjmdmc" : "",
                 "jsrxm" : "",
@@ -80,10 +81,11 @@ class AutoRenewTrafficPermit(object):
             self.log_info(f"续签接口状态码：{status_code}")
             self.log_info(f"续签接口响应消息：{msg}")
             state_result_json = self.request(self.state_url,payload = {})
-            current_state = state_result_json["data"]["bzclxx"][0]["ecbzxx"][0]["blztmc"]
-            remaining_time = state_result_json["data"]["bzclxx"][0]["ecbzxx"][0]["sxsyts"]
-            validity_period = state_result_json["data"]["bzclxx"][0]["ecbzxx"][0]["yxqs"] + "~" + state_result_json["data"]["bzclxx"][0]["ecbzxx"][0]["yxqz"]
-            self.log_info(f"申请状态：{current_state}")
-            self.log_info(f"生效时间：{validity_period}")
+            if state_result_json["data"]["bzclxx"][0]["ecbzxx"]:
+                current_state = state_result_json["data"]["bzclxx"][0]["ecbzxx"][0]["blztmc"]
+                remaining_time = state_result_json["data"]["bzclxx"][0]["ecbzxx"][0]["sxsyts"]
+                validity_period = state_result_json["data"]["bzclxx"][0]["ecbzxx"][0]["yxqs"] + "~" + state_result_json["data"]["bzclxx"][0]["ecbzxx"][0]["yxqz"]
+                self.log_info(f"申请状态：{current_state}")
+                self.log_info(f"生效时间：{validity_period}")
 
 AutoRenewTrafficPermit().auto_renew()
