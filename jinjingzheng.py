@@ -1,4 +1,5 @@
 import sys
+import json
 import requests
 from datetime import datetime,timedelta
 
@@ -53,7 +54,7 @@ class AutoRenewTrafficPermit(object):
             self.log_info("剩余时间小于1天，执行续签")
             tomorrow = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d")
             # 防止恶意访问，请求接口参数不做解释，需要的自行抓包
-            payload = {
+            payload = json.dumps({
                 "sqdzgdjd" : "",
                 "txrxx" : [
                 ],
@@ -74,7 +75,7 @@ class AutoRenewTrafficPermit(object):
                 "jjrq" : tomorrow,
                 "jjlkmc" : "",
                 "xxdz" : ""
-            }
+            })
             renew_result_json = self.request(self.inster_apply_record_url, payload)
             status_code = renew_result_json["code"]
             msg = renew_result_json["msg"]
