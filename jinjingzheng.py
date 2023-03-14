@@ -49,7 +49,8 @@ class AutoRenewTrafficPermit(object):
 
     def request(self, url, payload):
         headers = {
-            "Authorization": self.auth
+            "Authorization": self.auth,
+            'Content-Type': 'application/json'
         }
         response = requests.request("POST", url, headers=headers, data=payload)
         res_result_json = response.json()
