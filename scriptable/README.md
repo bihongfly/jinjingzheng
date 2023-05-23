@@ -1,8 +1,8 @@
 ## 进京证Scriptalbe
-使用方法：
-    注释：由于本人没有安卓手机，所以不确定安卓是否有scriptable软件，以下操作仅以苹果手机演示。
-    - App Store 下载 Scriptable
-        ![](https://p.ipic.vip/eiiy14.png)
+- 使用方法：
+      注释：由于本人没有安卓手机，所以不确定安卓是否有scriptable软件，以下操作仅以苹果手机演示。
+      - App Store 下载 Scriptable
+          ![](https://p.ipic.vip/eiiy14.png)
 
 - 打开Scriptable，点击右上角+号
 
