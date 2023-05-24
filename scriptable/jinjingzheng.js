@@ -14,8 +14,8 @@ async function createWidget(data) {
     bg = new LinearGradient()
     bg.locations = [0,1]
     bg.colors = [
-    new Color("#9ab8eb", 1),
-    new Color("#ebe8f3",1)
+        new Color("#9ab8eb", 1),
+        new Color("#ebe8f3",1)
     ]
     w.backgroundGradient = bg
 
@@ -65,17 +65,17 @@ async function createWidget(data) {
     WeatherStack.layoutVertically()
     let WeatherData = await getWeather()
     if (WeatherData.data.forecast[0].type == "霾") {
-    weatherIcon = "🌫️"
+        weatherIcon = "🌫️"
     } else if (WeatherData.data.forecast[0].type == "雨") {
-    weatherIcon = "🌧️"
+        weatherIcon = "🌧️"
     } else if (WeatherData.data.forecast[0].type == "晴") {
-    weatherIcon = "☀️"
+        weatherIcon = "☀️"
     } else if (WeatherData.data.forecast[0].type == "多云") {
-    weatherIcon = "☁️"
+        weatherIcon = "☁️"
     } else if (WeatherData.data.forecast[0].type == "阴") {
-    weatherIcon = "⛅"
+        weatherIcon = "⛅"
     } else {
-    weatherIcon = data.data.forecast[0].type
+        weatherIcon = WeatherData.data.forecast[0].type
     }
     const WeatherStatusLabel = WeatherStack.addText(WeatherData.cityInfo.city + " " + WeatherData.data.wendu + "° " + WeatherData.data.forecast[0].fx + WeatherData.data.forecast[0].fl + " " + weatherIcon)
     WeatherStatusLabel.font = Font.regularSystemFont(13)
