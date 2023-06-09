@@ -52,9 +52,8 @@ class AutoRenewTrafficPermit(object):
             "Authorization": self.auth,
             "Content-Type": "application/json"
         }
-        response = requests.request("POST", url, headers=headers, data=payload)
-        res_result_json = response.json()
-        return res_result_json
+        res = requests.request("POST", url, headers=headers, data=payload)
+        return res.json()
 
     def getRemainingTime(self):
         state_result_json = self.request(self.state_url,payload = {})
@@ -84,13 +83,17 @@ class AutoRenewTrafficPermit(object):
         current_state,validity_period,apply_id_old = self.getRemainingTime()
         self.payload["applyIdOld"] = apply_id_old
         payload = json.dumps(self.payload)
-        if current_state == "审核通过(生效中)":
+        if current_state == "审核通过(待生效)":
+            print("审核通过(待生效),无需重新申请")
+        elif current_state == "审核中":
+            print("审核中,无需重新申请")
+        elif current_state == "审核通过(生效中)":
             today = datetime.now().strftime("%Y-%m-%d")
             if validity_period == today:
                 print("剩余时间小于1天，执行续签")
                 self.autoRenew(payload)
-        elif current_state == "审核通过(待生效)":
-            print("审核通过(待生效),无需重新申请")
+            else:
+                print("剩余时间大于1天，无法续签")
         else:
             self.autoRenew(payload)
 AutoRenewTrafficPermit().main()
