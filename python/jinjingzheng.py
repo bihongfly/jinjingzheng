@@ -79,21 +79,30 @@ class AutoRenewTrafficPermit(object):
         print(f"续签接口状态码：{status_code}")
         print(f"续签接口响应消息：{msg}")
 
+    def sendMsg(self, msg):
+        SendKey = ''
+        requests.post("https://sctapi.ftqq.com/{}.send?title={}&desp={}".format(SendKey,msg, msg))
+        print(msg)
+
     def main(self):
         current_state,validity_period,apply_id_old = self.getRemainingTime()
         self.payload["applyIdOld"] = apply_id_old
         payload = json.dumps(self.payload)
         if current_state == "审核通过(待生效)":
-            print("审核通过(待生效),无需重新申请")
+            msg = "审核通过(待生效),无需重新申请"
+            self.sendMsg(msg)
         elif current_state == "审核中":
-            print("审核中,无需重新申请")
+            msg = "审核中,无需重新申请"
+            self.sendMsg(msg)
         elif current_state == "审核通过(生效中)":
             today = datetime.now().strftime("%Y-%m-%d")
             if validity_period == today:
-                print("剩余时间小于1天，执行续签")
+                msg = "剩余时间小于1天，执行续签"
+                self.sendMsg(msg)
                 self.autoRenew(payload)
             else:
-                print("剩余时间大于1天，无法续签")
+                msg = "剩余时间大于1天，无法续签"
+                self.sendMsg(msg)
         else:
             self.autoRenew(payload)
 AutoRenewTrafficPermit().main()

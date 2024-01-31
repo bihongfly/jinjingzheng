@@ -1,3 +1,3 @@
 自动办理进京证，目前支持Python、Scriptable两种方式
-- Scriptable最终的效果展示图：
-  ![](https://p.ipic.vip/ukuq8y.png)
+- Python版可以结合青龙、server酱等实现定时触发、自动微信发送通知等功能
+- Scriptable版可以基于苹果Scriptable软件设置桌面组件
