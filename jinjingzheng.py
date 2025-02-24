@@ -110,7 +110,7 @@ def main():
         jjrq, flag = today, True
 
     if flag:
-        renw_data = exec_renew(state_data, jjrq, jjzzl="六环外")
+        renw_data = exec_renew(data, jjrq, jjzzl="六环外")
         msg = "续签成功" if renw_data["code"] == 200 else "续签失败"
         state_data_new = request(STATE_LIST_URL, payload = {})
         data = state_data_new['data']['bzclxx'][0]['ecbzxx'][0]
