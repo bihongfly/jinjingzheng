@@ -1,32 +1,26 @@
 import sys
-import json
 import requests
 from datetime import datetime,timedelta
 
-## 变量设置
-
-### 接口信息
+# 配置信息（需自行填写）
 URL = "" # 初始地址，防止恶意访问，请求地址不提供，需要的自行抓包
 AUTH = "" # 访问凭证，通过抓包在请求头信息 Authorization 字段
+SEND_KEY = "" # server酱微信推送密钥(可选)
+
+# 接口地址
 STATE_LIST_URL = f"https://{URL}/pro/applyRecordController/stateList" # 查询状态接口
 INSERT_APPLY_RECORD_URL = f"https://{URL}/pro/applyRecordController/insertApplyRecord" # 办理续签接口
 
-### 地理位置，经纬度信息(提示：如果不知道咋改，那就不要改！！想手动或自动生成请自行研究高德百度API)。
-sqdzgdjd = "116.342573" # 进京经度
-sqdzgdwd = "39.947399" # 进京纬度
-sqdzbdjd = "116.342573" # 进京目的地经度
-sqdzbdwd = "39.947399" # 进京目的地纬度
-xxdz = "西直门外大街137号北京动物园" # 进京地址
-
-### server酱微信推送密钥(可选)
-SEND_KEY = ""
+### 地理信息（提示：建议通过http://jingweidu.757dy.com/自行查询自己的经纬度）
+SQDZGDJD = "116.269423" # 社区地址高德经度
+SQDZGDWD = "40.211128" # 社区地址高德纬度
+SQDZBDJD = "116.275203" # 社区地址百度经度
+SQDZBDWD = "40.216228" # 社区地址百度纬度
+XXDZ = "白浮泉公园" # 进京地址
 
 def request(url, payload) -> dict:
-    headers = {
-        "Authorization": AUTH,
-        "Content-Type": "application/json"
-    }
-    res = requests.post(url, headers=headers, data=payload)
+    headers = {"Authorization": AUTH, "Content-Type": "application/json"}
+    res = requests.post(url, headers=headers, json=payload)
     data = res.json()
     if data["code"] == 200:
         return data
@@ -35,55 +29,33 @@ def request(url, payload) -> dict:
         sys.exit(1)
 
 def exec_renew(state_data, date, jjzzl="六环外") -> dict:
-    jjzzl = "01" if jjzzl == "六环内" else "02" # 进京证类型
-    jjdq = "010" # 进京目的地地区
-    jjmd = "06" # 进京目的地
-    jjlk = "00606" # 进京路况
-    jjmdmc = "其它" # 进京目的地名称
-    jjlkmc = "其他道路" # 进京路况名称
-    jjrq = date # 进京日期(申请生效日期)
-
-    # 接口自动返回个人信息，无需修改
-    hpzl = state_data["hpzl"] # 车牌类型
-    apply_id_old = state_data["applyId"] # 续办申请id
-    vId = state_data["vId"] # # 车辆识别代号
-    jsrxm = state_data["jsrxm"] # 车主姓名
-    jszh = state_data["jszh"] # 车主身份证号
-    hphm = state_data["hphm"] # 车牌号
-
     payload = {
-        "sqdzgdjd" : sqdzgdjd,
-        "sqdzgdwd" : sqdzgdwd,
-        "sqdzbdjd" : sqdzbdjd,
-        "sqdzbdwd" : sqdzbdwd,
+        "sqdzgdjd": SQDZGDJD,
+        "sqdzgdwd": SQDZGDWD,
+        "sqdzbdjd": SQDZBDJD,
+        "sqdzbdwd": SQDZBDWD,
+        "xxdz" : XXDZ,
+        "hpzl" : state_data["hpzl"], # 车牌类型
+        "applyIdOld" : state_data["applyId"], # 续办申请id
+        "vId" : state_data["vId"], # 车辆识别代号
+        "jsrxm" : state_data["jsrxm"], # 车主姓名
+        "jszh" : state_data["jszh"], # 车主身份证号
+        "hphm" : state_data["hphm"], # 车牌号
         "txrxx" : [],
-        "hpzl" : hpzl,
-        "jjdq" : jjdq,
-        "jjmd" : jjmd,
-        "jjzzl" : jjzzl,
-        "jjlk" : jjlk,
-        "jjmdmc" : jjmdmc,
-        "jjlkmc" : jjlkmc,
-        "applyIdOld" : apply_id_old,
-        "jjrq" : jjrq,
-        "vId" : vId,
-        "jsrxm" : jsrxm,
-        "jszh" : jszh,
-        "hphm" : hphm,
-        "xxdz" : xxdz
+        "jjdq" : "010", # 进京目的地地区
+        "jjmd" : "06", # 进京目的地
+        "jjzzl" : "01" if jjzzl == "六环内" else "02", # 进京证类型
+        "jjlk" : "00606", # 进京路况
+        "jjmdmc" : "其它", # 进京目的地名称
+        "jjlkmc" : "其他道路", # 进京路况名称
+        "jjrq" : date, # 进京日期(申请生效日期)
     }
-    return request(INSERT_APPLY_RECORD_URL, json.dumps(payload))
+    return request(INSERT_APPLY_RECORD_URL, payload)
 
-def days_between_dates(date1_str, date2_str) -> int:
-    try:
-        date1 = datetime.strptime(date1_str, '%Y-%m-%d')
-        date2 = datetime.strptime(date2_str, '%Y-%m-%d')
-        time_difference = date2 - date1
-        days_difference = time_difference.days + 1
-        return days_difference
-    except Exception as error:
-        print("计算两个日期差失败:", error)
-        return 0
+def days_between_dates(date1: str, date2: str) -> int:
+    d1 = datetime.strptime(date1, '%Y-%m-%d')
+    d2 = datetime.strptime(date2, '%Y-%m-%d')
+    return (d2 - d1).days + 1
 
 def get_future_date(date_str, days) -> str:
     date_obj = datetime.strptime(date_str, "%Y-%m-%d").date()
