@@ -73,9 +73,9 @@ def main():
     data = state_data["data"]["bzclxx"][0]["ecbzxx"][0] if state_data["data"]["bzclxx"][0]["ecbzxx"] else state_data["data"]["bzclxx"][0]["bzxx"][0]
     yxqz, blztmc = data["yxqz"], data["blztmc"]
     today = datetime.now().strftime("%Y-%m-%d")
-    if blztmc in ["审核通过(生效中)", "审核中", "审核通过(待生效)", "已取消"]:
+    if blztmc in ["审核通过(生效中)", "审核中", "审核通过(待生效)", "已取消", "失败(审核不通过)"]:
         days_difference = days_between_dates(today, yxqz)
-        if (blztmc == "审核通过(生效中)" and days_difference <= 1) or blztmc == "已取消":
+        if (blztmc == "审核通过(生效中)" and days_difference <= 1) or blztmc == "已取消" or blztmc == "失败(审核不通过)":
             apply_date, flag = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d"), True
         else:
             flag = False
