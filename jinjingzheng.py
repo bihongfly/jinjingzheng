@@ -35,6 +35,8 @@ def exec_renew(data, date, jjzzl="六环外") -> dict:
         "sqdzbdjd": SQDZBDJD,
         "sqdzbdwd": SQDZBDWD,
         "xxdz" : XXDZ,
+        "sfzj" : "1", # 是否在京
+        "zjxxdz" : XXDZ, # 在京详细地址
         "hpzl" : data["hpzl"], # 车牌类型
         "applyIdOld" : data["applyId"], # 续办申请id
         "vId" : data["vId"], # 车辆识别代号
