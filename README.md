@@ -22,7 +22,7 @@
   - 3、(推荐)部署 [青龙](https://github.com/whyour/qinglong)，开源的定时任务管理平台，支持 Python3、JavaScript、Shell、Typescript
 ### ios快捷指令自动化（仅六环外）
   - 需要自行在字典中填写URL、AUTH
-  - https://www.icloud.com/shortcuts/cdf68b758467404484b129ea76626493
+  - https://www.icloud.com/shortcuts/7c75921155564f0abac21ca4a1c01fe1
   
 
 上面的脚本仅用于测试和学习研究，禁止用于商业用途，不能保证其合法性，准确性，完整性和有效性，请根据情况自行判断。
