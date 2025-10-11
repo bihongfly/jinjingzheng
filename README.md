@@ -20,7 +20,7 @@
   - 1、找一台可以长期运行的机器(服务器、主机、树莓派)，设计计划任务，每天执行脚本，确保进京证永不过期（此方法适合6环外进京证办理，不限次数）
   - 2、苹果手机可以下载Pythonista3(软件好像68元，自行购买或者找其他共享账号)，可以直接在手机执行python脚本。结合苹果自带的自动化，例如设置充满电的时候、某个时间点自动执行任务。
   - 3、(推荐)部署 [青龙](https://github.com/whyour/qinglong)，开源的定时任务管理平台，支持 Python3、JavaScript、Shell、Typescript
-### ios快捷指令自动化（仅六环外）
+### ios快捷指令（仅六环外）
   - 需要自行在字典中填写URL、AUTH
   - https://www.icloud.com/shortcuts/7c75921155564f0abac21ca4a1c01fe1
   
