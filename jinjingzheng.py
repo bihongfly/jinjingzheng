@@ -7,7 +7,7 @@ URL = "" # 初始地址，防止恶意访问，请求地址不提供，需要的
 AUTH = "" # 访问凭证，通过抓包在请求头信息 Authorization 字段
 SEND_KEY = "" # server酱微信推送密钥(可选)
 
-### 地理信息（按需改动，不懂可以不改。如需改动建议通过http://jingweidu.757dy.com/自行查询自己的经纬度）
+# 地理信息（按需改动，不懂可以不改。如需改动建议通过http://jingweidu.757dy.com/自行查询自己的经纬度）
 SQDZGDJD = "116.269423" # 社区地址高德经度
 SQDZGDWD = "40.211128" # 社区地址高德纬度
 SQDZBDJD = "116.275203" # 社区地址百度经度
@@ -18,7 +18,7 @@ XXDZ = "白浮泉公园" # 进京地址
 STATE_LIST_URL = f"https://{URL}/pro/applyRecordController/stateList" # 查询状态接口
 INSERT_APPLY_RECORD_URL = f"https://{URL}/pro/applyRecordController/insertApplyRecord" # 办理续签接口
 
-def request(url, payload={}) -> dict:
+def request(url, payload={}):
     headers = {"Authorization": AUTH, "Content-Type": "application/json"}
     res = requests.post(url, headers=headers, json=payload)
     data = res.json()
@@ -28,7 +28,7 @@ def request(url, payload={}) -> dict:
         print(f"请求失败，状态码: {data['code']}，错误信息: {data['msg']}")
         sys.exit(1)
 
-def exec_renew(data, date, jjzzl="六环外") -> dict:
+def exec_renew(data, date, jjzzl="六环外"):
     payload = {
         "sqdzgdjd": SQDZGDJD,
         "sqdzgdwd": SQDZGDWD,
@@ -54,21 +54,9 @@ def exec_renew(data, date, jjzzl="六环外") -> dict:
     }
     return request(INSERT_APPLY_RECORD_URL, payload)
 
-def days_between_dates(date1: str, date2: str) -> int:
-    d1 = datetime.strptime(date1, '%Y-%m-%d')
-    d2 = datetime.strptime(date2, '%Y-%m-%d')
-    return (d2 - d1).days + 1
-
-def get_future_date(date_str, days) -> str:
-    date_obj = datetime.strptime(date_str, "%Y-%m-%d").date()
-    future_date = date_obj + timedelta(days=days)
-    return future_date.strftime("%Y-%m-%d")
-
-def send_wechat(title, msg) -> None:
-    if not SEND_KEY:
-        print("未配置server酱推送密钥，不发送微信推送")
-        return
-    requests.post(f"https://sctapi.ftqq.com/{SEND_KEY}.send?title={title}&desp={msg}")
+def send_wechat(title, msg):
+    if SEND_KEY:
+        requests.post(f"https://sctapi.ftqq.com/{SEND_KEY}.send?title={title}&desp={msg}")
 
 def main():
     state_data = request(STATE_LIST_URL)
@@ -76,29 +64,27 @@ def main():
     yxqz, blztmc = data["yxqz"], data["blztmc"]
     today = datetime.now().strftime("%Y-%m-%d")
     if blztmc in ["审核通过(生效中)", "审核中", "审核通过(待生效)", "已取消", "失败(审核不通过)"]:
-        days_difference = days_between_dates(today, yxqz)
-        if (blztmc == "审核通过(生效中)" and days_difference <= 1) or blztmc == "已取消" or blztmc == "失败(审核不通过)":
+        days_left = (datetime.strptime(yxqz, '%Y-%m-%d') - datetime.strptime(today, '%Y-%m-%d')).days + 1
+        if (blztmc == "审核通过(生效中)" and days_left <= 1) or blztmc in ["已取消", "失败(审核不通过)"]:
             apply_date, flag = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d"), True
         else:
             flag = False
     else:
         apply_date, flag = today, True
-
     if flag:
-        renw_data = exec_renew(data, apply_date, jjzzl="六环外")
-        msg = "续签成功" if renw_data["code"] == 200 else "续签失败"
-        state_data_new = request(STATE_LIST_URL, payload = {})
+        exec_renew(data, apply_date)
+        msg = "续签成功"
+        state_data_new = request(STATE_LIST_URL)
         data = state_data_new['data']['bzclxx'][0]['ecbzxx'][0]
     else:
         msg = "无需续签"
-
     yxqs, blztmc, jjzzlmc, sqsj, hphm = data['yxqs'], data['blztmc'], data["jjzzlmc"], data['sqsj'], data['hphm']
-    yxqz = yxqz if data['yxqz'] else get_future_date(yxqs, 6)
-    formatted_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    yxqz = data.get('yxqz') or (datetime.strptime(yxqs, "%Y-%m-%d") + timedelta(days=6)).strftime("%Y-%m-%d")
+    exec_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     title = f"进京证{msg}: {yxqs[5:]}~{yxqz[5:]}"
-    msg = f"{msg}\n状态: {blztmc}\n有效期: {yxqs}至{yxqz}\n类型: {jjzzlmc}\n申请时间: {sqsj}\n执行时间: {formatted_time}\n车牌号码: {hphm}"
-    print(msg)
-    send_wechat(title,msg)
+    content = f"{msg}\n状态: {blztmc}\n有效期: {yxqs}至{yxqz}\n类型: {jjzzlmc}\n申请时间: {sqsj}\n执行时间: {exec_time}\n车牌号码: {hphm}"
+    print(content)
+    send_wechat(title, content)
 
 if __name__ == "__main__":
     main()
