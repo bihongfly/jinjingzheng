@@ -1,0 +1,13 @@
+# Python 缓存
+__pycache__/
+*.py[cod]
+
+# 本地私有配置：把 URL / AUTH / SEND_KEY / JSRXM / JSZH 放这里，不要提交
+config.local.py
+
+# 运行期缓存
+.jjz_cache.json
+
+# 其他
+.acl-report/
+*.log
